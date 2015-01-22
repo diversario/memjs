@@ -105,6 +105,32 @@ exports.testSetNumberSuccessful = function(beforeExit, assert) {
   });
 }
 
+exports.testSetFloatNumberSuccessful = function(beforeExit, assert) {
+  var n = 0;
+  var callbn = 0;
+  var dummyServer = new MemJS.Server();
+  dummyServer.write = function(requestBuf) {
+    var request = MemJS.Utils.parseMessage(requestBuf);
+    assert.equal('hello', request.key);
+    assert.strictEqual(3.1415, request.val);
+    assert.equal('\0\0\0\2\0\0\0\0', request.extras.toString());
+    n += 1;
+    dummyServer.respond({header: {status: 0, opaque: request.header.opaque}});
+  }
+
+  var client = new MemJS.Client([dummyServer]);
+  client.set('hello', 3.1415, function(err, val) {
+    assert.equal(true, val);
+    assert.equal(null, err);
+    callbn += 1;
+  });
+
+  beforeExit(function() {
+    assert.equal(1, n,  'Ensure set is called');
+    assert.equal(1, callbn,  'Ensure callback is called');
+  });
+}
+
 exports.testSetJSONSuccessful = function(beforeExit, assert) {
   var n = 0;
   var callbn = 0;
