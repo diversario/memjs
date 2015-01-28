@@ -27,6 +27,32 @@ exports.testGetSuccessful = function(beforeExit, assert) {
     assert.equal(1, callbn,  'Ensure callback is called');
   });
 }
+exports.testGetSuccessfulWithPrefix = function(beforeExit, assert) {
+  var n = 0;
+  var callbn = 0;
+  var dummyServer = new MemJS.Server();
+  dummyServer.write = function(requestBuf) {
+    request = MemJS.Utils.parseMessage(requestBuf);
+    assert.equal('foo_hello', request.key);
+    n += 1;
+    dummyServer.respond(
+      {header: {status: 0, opaque: request.header.opaque},
+        val: 'world', extras: 'flagshere'});
+  }
+
+  var client = new MemJS.Client([dummyServer], {keyspace: 'foo_'});
+  client.get('hello', function(err, val, flags) {
+    assert.equal('world', val);
+    assert.equal('flagshere', flags);
+    assert.equal(null, err);
+    callbn += 1;
+  });
+
+  beforeExit(function() {
+    assert.equal(1, n,  'Ensure set is called');
+    assert.equal(1, callbn,  'Ensure callback is called');
+  });
+}
 
 exports.testGetNotFound = function(beforeExit, assert) {
   var n = 0;
