@@ -561,11 +561,11 @@ exports.testIncrementSuccessful = function(beforeExit, assert) {
   var callbn = 0;
   var dummyServer = new MemJS.Server();
   dummyServer.write = function(requestBuf) {
-    request = MemJS.Utils.parseMessage(requestBuf);
+    var request = MemJS.Utils.parseMessage(requestBuf);
     assert.equal(5, request.header.opcode);
     assert.equal('number-increment-test', request.key);
     assert.equal('', request.val);
-    assert.equal('\0\0\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0',
+    assert.equal('\0\0\0\0\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0',
                  request.extras.toString());
     n += 1;
     var value = new Buffer(8);
