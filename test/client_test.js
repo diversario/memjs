@@ -224,7 +224,7 @@ exports.testSetUnsuccessful = function(beforeExit, assert) {
   var client = new MemJS.Client([dummyServer]);
   client.set('hello', 'world', function(err, val) {
     assert.equal(undefined, val);
-    assert.equal("MemJS SET: " + errors[3], err.message);
+    assert.equal('Failed to SET a key "hello". Error: ' + errors[3], err.message);
     callbn += 1;
   });
 
